@@ -7,7 +7,9 @@ talkerRoute.get('/', async (_req, res) => {
   try {
     const talkers = await readFileTalker();
 
-    if (talkers.length === 0) res.status(200).json([]);
+    if (talkers.length === 0) {
+     return res.status(200).json([]);
+    }
 
     return res.status(200).json(talkers);
   } catch (error) {
