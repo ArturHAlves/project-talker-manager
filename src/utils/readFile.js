@@ -2,7 +2,7 @@ const fs = require('fs/promises');
 
 const { join } = require('path');
 
-const path = join(__dirname, './../../talker.json');
+const path = join(__dirname, './../talker.json');
 
 const readFileTalker = async () => {
   try {

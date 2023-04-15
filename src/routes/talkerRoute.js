@@ -1,5 +1,5 @@
 const express = require('express');
-const { readFileTalker, readFileTalkerByID } = require('../utils/fs/readFile');
+const { readFileTalker, readFileTalkerByID } = require('../utils/readFile');
 
 const talkerRoute = express.Router();
 
@@ -20,7 +20,9 @@ talkerRoute.get('/:id', async (req, res) => {
     const { id } = req.params;
     const talkers = await readFileTalkerByID(+id);
 
-    if (!talkers) res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+    if (!talkers) {
+      return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+    }
 
     return res.status(200).json(talkers);
   } catch (error) {
