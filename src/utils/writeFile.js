@@ -4,12 +4,14 @@ const { join } = require('path');
 
 const path = join(__dirname, '../talker.json');
 
+const readFile = async () => fs.readFile(path, 'utf-8');
+
 const writeFile = async (talker) => {
   try {
-    const talkers = await fs.readFile(path, 'utf-8');
-    const json = JSON.parse(talkers);
+    const data = await readFile();
+    const talkers = JSON.parse(data);
 
-    const write = await fs.writeFile(path, JSON.stringify([...json, talker]));
+    const write = await fs.writeFile(path, JSON.stringify([...talkers, talker]));
 
     return write;
   } catch (error) {
@@ -17,4 +19,19 @@ const writeFile = async (talker) => {
   }
 };
 
-module.exports = { writeFile };
+const writeFileUpdate = async (id, talker) => {
+  try {
+    const data = await readFile();
+    const talkers = JSON.parse(data);
+
+    const index = talkers.findIndex((element) => element.id === id);
+    talkers[index] = { id, ...talker };
+    await fs.writeFile(path, JSON.stringify(talkers));
+
+    return talkers[index];
+  } catch (error) {
+    console.error('Não foi possível atualizar o arquivo');
+  }
+};
+
+module.exports = { writeFile, writeFileUpdate };

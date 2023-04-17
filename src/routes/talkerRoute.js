@@ -1,13 +1,14 @@
 const express = require('express');
 const { readFileTalker, readFileTalkerByID } = require('../utils/readFile');
-const { writeFile } = require('../utils/writeFile');
+const { writeFile, writeFileUpdate } = require('../utils/writeFile');
 const {
   validateAge,
   validateName,
   validateToken,
   validateTalk,
   validateWatchedAt,
-  validateRate } = require('../middlewares');
+  validateRate,
+} = require('../middlewares');
 
 const talkerRoute = express.Router();
 
@@ -28,7 +29,7 @@ talkerRoute.get('/:id', async (req, res) => {
     const { id } = req.params;
     const talkers = await readFileTalkerByID(+id);
 
-    if (!talkers) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' }); 
+    if (!talkers) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 
     return res.status(200).json(talkers);
   } catch (error) {
@@ -58,7 +59,32 @@ talkerRoute.post(
 
       return res.status(201).json(newTalker);
     } catch (error) {
-      return res.status(500).json({ error: `${error}` });
+      return res.status(500).json({ error: `${error.message}` });
+    }
+  },
+);
+
+talkerRoute.put(
+  '/:id',
+  validateToken,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateWatchedAt,
+  validateRate,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { body } = req;
+
+      const findId = await readFileTalkerByID(+id);
+      if (!findId) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+  
+      const updateTalker = await writeFileUpdate(+id, body);
+
+      return res.status(200).json(updateTalker);
+    } catch (error) {
+      return res.status(500).json({ error: `${error.message}` });
     }
   },
 );
