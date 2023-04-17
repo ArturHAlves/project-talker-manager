@@ -1,6 +1,6 @@
 const express = require('express');
 const { readFileTalker, readFileTalkerByID } = require('../utils/readFile');
-const { writeFile, writeFileUpdate } = require('../utils/writeFile');
+const { writeFile, writeFileUpdate, writeFileDelete } = require('../utils/writeFile');
 const {
   validateAge,
   validateName,
@@ -88,5 +88,16 @@ talkerRoute.put(
     }
   },
 );
+
+talkerRoute.delete('/:id', validateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await writeFileDelete(+id);
+
+    return res.status(204).end();
+  } catch (error) {
+    return res.status(500).json({ error: `${error.message}` });
+  }
+});
 
 module.exports = talkerRoute;

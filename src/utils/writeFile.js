@@ -4,13 +4,14 @@ const { join } = require('path');
 
 const path = join(__dirname, '../talker.json');
 
-const readFile = async () => fs.readFile(path, 'utf-8');
+const readFile = async () => {
+  const data = await fs.readFile(path, 'utf-8');
+  return JSON.parse(data);
+};
 
 const writeFile = async (talker) => {
   try {
-    const data = await readFile();
-    const talkers = JSON.parse(data);
-
+    const talkers = await readFile();
     const write = await fs.writeFile(path, JSON.stringify([...talkers, talker]));
 
     return write;
@@ -21,8 +22,7 @@ const writeFile = async (talker) => {
 
 const writeFileUpdate = async (id, talker) => {
   try {
-    const data = await readFile();
-    const talkers = JSON.parse(data);
+    const talkers = await readFile();
 
     const index = talkers.findIndex((element) => element.id === id);
     talkers[index] = { id, ...talker };
@@ -34,4 +34,17 @@ const writeFileUpdate = async (id, talker) => {
   }
 };
 
-module.exports = { writeFile, writeFileUpdate };
+const writeFileDelete = async (id) => {
+  try {
+    const talkers = await readFile();
+
+    const removeTalker = talkers.filter((element) => element.id !== id);
+    await fs.writeFile(path, JSON.stringify(removeTalker));
+
+    return removeTalker;
+  } catch (error) {
+    console.error('Não foi possível deletar o arquivo');
+  }
+};
+
+module.exports = { writeFile, writeFileUpdate, writeFileDelete };
