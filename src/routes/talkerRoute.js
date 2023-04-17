@@ -1,5 +1,5 @@
 const express = require('express');
-const { readFileTalker, readFileTalkerByID } = require('../utils/readFile');
+const { readFileTalker, readFileTalkerByID, filterByTalker } = require('../utils/readFile');
 const { writeFile, writeFileUpdate, writeFileDelete } = require('../utils/writeFile');
 const {
   validateAge,
@@ -11,6 +11,17 @@ const {
 } = require('../middlewares');
 
 const talkerRoute = express.Router();
+
+talkerRoute.get('/search', validateToken, async (req, res) => {
+  try {
+    const { q } = req.query;
+    const query = await filterByTalker(q);
+
+    return res.status(200).json(query);
+  } catch (error) {
+    return res.status(500).json({ error: `${error.message}` });
+  }
+});
 
 talkerRoute.get('/', async (_req, res) => {
   try {

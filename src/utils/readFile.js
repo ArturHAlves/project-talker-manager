@@ -23,4 +23,16 @@ const readFileTalkerByID = async (id) => {
   }
 };
 
-module.exports = { readFileTalker, readFileTalkerByID };
+const filterByTalker = async (talker) => {
+  try {
+    const talkers = await readFileTalker();
+
+    const filterTalker = talkers.filter(({ name }) =>
+      name.toLowerCase().includes(talker.toLowerCase()));
+    return filterTalker;
+  } catch (error) {
+    console.error('Não foi possível fazer uma busca no arquivo');
+  }
+};
+
+module.exports = { readFileTalker, readFileTalkerByID, filterByTalker };
