@@ -1,5 +1,13 @@
 const express = require('express');
 const { readFileTalker, readFileTalkerByID } = require('../utils/readFile');
+const { writeFile } = require('../utils/writeFile');
+const {
+  validateAge,
+  validateName,
+  validateToken,
+  validateTalk,
+  validateWatchedAt,
+  validateRate } = require('../middlewares');
 
 const talkerRoute = express.Router();
 
@@ -8,7 +16,7 @@ talkerRoute.get('/', async (_req, res) => {
     const talkers = await readFileTalker();
 
     if (talkers.length === 0) return res.status(200).json([]);
-    
+
     return res.status(200).json(talkers);
   } catch (error) {
     res.status(500).json({ message: `Error: ${error.message}` });
@@ -20,12 +28,39 @@ talkerRoute.get('/:id', async (req, res) => {
     const { id } = req.params;
     const talkers = await readFileTalkerByID(+id);
 
-    if (!talkers) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
-    
+    if (!talkers) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' }); 
+
     return res.status(200).json(talkers);
   } catch (error) {
     return res.status(500).json({ message: `Error: ${error.message}` });
   }
 });
+
+talkerRoute.post(
+  '/',
+  validateToken,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateWatchedAt,
+  validateRate,
+  async (req, res) => {
+    try {
+      const { body } = req;
+      const talkers = await readFileTalker();
+
+      const newTalker = {
+        id: Number(talkers[talkers.length - 1].id) + 1,
+        ...body,
+      };
+
+      await writeFile(newTalker);
+
+      return res.status(201).json(newTalker);
+    } catch (error) {
+      return res.status(500).json({ error: `${error}` });
+    }
+  },
+);
 
 module.exports = talkerRoute;

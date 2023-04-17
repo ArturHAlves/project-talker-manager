@@ -2,11 +2,11 @@ const fs = require('fs/promises');
 
 const { join } = require('path');
 
-const path = join(__dirname, './../talker.json');
+const path = join(__dirname, '../talker.json');
 
 const readFileTalker = async () => {
   try {
-    const talkers = await fs.readFile(path);
+    const talkers = await fs.readFile(path, 'utf-8');
     return JSON.parse(talkers);
   } catch (error) {
     console.error('Não foi possível ler o arquivo');

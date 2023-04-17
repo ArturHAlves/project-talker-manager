@@ -2,8 +2,7 @@ const express = require('express');
 
 const loginRoute = express.Router();
 const generateToken = require('../utils/generateToken');
-const validateEmail = require('../middlewares/validateLoginEmail');
-const validatePassword = require('../middlewares/validateLoginPassword');
+const { validateEmail, validatePassword } = require('../middlewares');
 
 loginRoute.post('/', validateEmail, validatePassword, async (_req, res) => {
   try {
