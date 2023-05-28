@@ -16,15 +16,16 @@ const {
   validateTalk,
   validateWatchedAt,
   validateRate,
-  validateFilter,
+  filterByDate,
+  filterByRate,
 } = require('../middlewares');
 
 const talkerRoute = express.Router();
 
-talkerRoute.get('/search', validateToken, validateFilter, async (req, res) => {
+talkerRoute.get('/search', validateToken, filterByDate, filterByRate, async (req, res) => {
   try {
-    const { q, rate } = req.query;
-    const query = await filterByTalker(q, Number(rate));
+    const { q, rate, date } = req.query;
+    const query = await filterByTalker(q, Number(rate), date);
 
     return res.status(200).json(query);
   } catch (error) {
