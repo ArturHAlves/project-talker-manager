@@ -23,16 +23,20 @@ const readFileTalkerByID = async (id) => {
   }
 };
 
-const filterByTalker = async (talker) => {
-  try {
+const filterByTalker = async (q, rate) => {
     const talkers = await readFileTalker();
+    let filteredTalkers = talkers;
 
-    const filterTalker = talkers.filter(({ name }) =>
-      name.toLowerCase().includes(talker.toLowerCase()));
-    return filterTalker;
-  } catch (error) {
-    console.error('Não foi possível fazer uma busca no arquivo');
-  }
+    if (q) {
+      filteredTalkers = filteredTalkers.filter(({ name }) =>
+        name.toLowerCase().includes(q.toLowerCase()));
+    }
+
+    if (rate) {
+      filteredTalkers = filteredTalkers.filter(({ talk }) =>
+        talk.rate === rate);
+    }
+    return filteredTalkers;
 };
 
 module.exports = { readFileTalker, readFileTalkerByID, filterByTalker };

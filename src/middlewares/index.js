@@ -10,6 +10,9 @@ const validateTalk = require('./validateTalkerTalk');
 const validateWatchedAt = require('./validateTalkerWatchedAt');
 const validateRate = require('./validateTalkerRate');
 
+// Filter
+const validateFilter = require('./validateFilter');
+
 module.exports = {
   validateEmail,
   validatePassword,
@@ -19,4 +22,5 @@ module.exports = {
   validateTalk,
   validateWatchedAt,
   validateRate,
+  validateFilter,
 };

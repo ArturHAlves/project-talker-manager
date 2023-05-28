@@ -1,6 +1,14 @@
 const express = require('express');
-const { readFileTalker, readFileTalkerByID, filterByTalker } = require('../utils/readFile');
-const { writeFile, writeFileUpdate, writeFileDelete } = require('../utils/writeFile');
+const {
+  readFileTalker,
+  readFileTalkerByID,
+  filterByTalker,
+} = require('../utils/readFile');
+const {
+  writeFile,
+  writeFileUpdate,
+  writeFileDelete,
+} = require('../utils/writeFile');
 const {
   validateAge,
   validateName,
@@ -8,14 +16,15 @@ const {
   validateTalk,
   validateWatchedAt,
   validateRate,
+  validateFilter,
 } = require('../middlewares');
 
 const talkerRoute = express.Router();
 
-talkerRoute.get('/search', validateToken, async (req, res) => {
+talkerRoute.get('/search', validateToken, validateFilter, async (req, res) => {
   try {
-    const { q } = req.query;
-    const query = await filterByTalker(q);
+    const { q, rate } = req.query;
+    const query = await filterByTalker(q, Number(rate));
 
     return res.status(200).json(query);
   } catch (error) {
@@ -40,8 +49,11 @@ talkerRoute.get('/:id', async (req, res) => {
     const { id } = req.params;
     const talkers = await readFileTalkerByID(+id);
 
-    if (!talkers) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
-
+    if (!talkers) {
+      return res
+        .status(404)
+        .json({ message: 'Pessoa palestrante não encontrada' });
+    }
     return res.status(200).json(talkers);
   } catch (error) {
     return res.status(500).json({ message: `Error: ${error.message}` });
@@ -70,8 +82,8 @@ talkerRoute.post(
 
       return res.status(201).json(newTalker);
     } catch (error) {
-      return res.status(500).json({ error: `${error.message}` });
-    }
+      return res.status(500).json({ error: `${error.message}` }); 
+}
   },
 );
 
@@ -89,8 +101,12 @@ talkerRoute.put(
       const { body } = req;
 
       const findId = await readFileTalkerByID(+id);
-      if (!findId) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
-  
+      if (!findId) {
+ return res
+          .status(404)
+          .json({ message: 'Pessoa palestrante não encontrada' }); 
+}
+
       const updateTalker = await writeFileUpdate(+id, body);
 
       return res.status(200).json(updateTalker);
