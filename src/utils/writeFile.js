@@ -34,6 +34,23 @@ const writeFileUpdate = async (id, talker) => {
   }
 };
 
+const writeFilePatch = async (id, rate) => {
+  try {
+    const talkers = await readFile();
+
+    const patchTalkers = talkers.map((talker) => {
+      if (talker.id === id) return { ...talker, talk: { ...talker.talk, rate } };
+      return talker;
+    });
+
+    await fs.writeFile(path, JSON.stringify(patchTalkers));
+
+    return patchTalkers;
+  } catch (error) {
+    console.log('Não foi possível corrigir o arquivo');
+  }
+};
+
 const writeFileDelete = async (id) => {
   try {
     const talkers = await readFile();
@@ -47,4 +64,4 @@ const writeFileDelete = async (id) => {
   }
 };
 
-module.exports = { writeFile, writeFileUpdate, writeFileDelete };
+module.exports = { writeFile, writeFileUpdate, writeFileDelete, writeFilePatch };

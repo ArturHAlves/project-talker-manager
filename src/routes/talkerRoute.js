@@ -8,6 +8,7 @@ const {
   writeFile,
   writeFileUpdate,
   writeFileDelete,
+  writeFilePatch,
 } = require('../utils/writeFile');
 const {
   validateAge,
@@ -18,11 +19,16 @@ const {
   validateRate,
   filterByDate,
   filterByRate,
+  validatePatchRate,
 } = require('../middlewares');
 
 const talkerRoute = express.Router();
 
-talkerRoute.get('/search', validateToken, filterByDate, filterByRate, async (req, res) => {
+talkerRoute.get('/search', 
+validateToken,
+filterByDate,
+filterByRate, 
+async (req, res) => {
   try {
     const { q, rate, date } = req.query;
     const query = await filterByTalker(q, Number(rate), date);
@@ -116,6 +122,19 @@ talkerRoute.put(
     }
   },
 );
+
+talkerRoute.patch('/rate/:id', validateToken, validatePatchRate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rate } = req.body;
+
+    await writeFilePatch(+id, rate);
+
+    return res.status(204).end();
+  } catch (error) {
+    return res.status(500).json({ error: `${error.message}` });
+  }
+});
 
 talkerRoute.delete('/:id', validateToken, async (req, res) => {
   try {
