@@ -1,4 +1,5 @@
 const express = require('express');
+const connection = require('../db/connection');
 const {
   readFileTalker,
   readFileTalkerByID,
@@ -23,6 +24,25 @@ const {
 } = require('../middlewares');
 
 const talkerRoute = express.Router();
+
+talkerRoute.get('/db', async (_req, res) => {
+  try {
+    const [talkers] = await connection.execute('SELECT * FROM talkers');
+
+    if (!talkers) return res.status(200).json([]); 
+
+    const results = talkers.map((talker) => ({
+      name: talker.name,
+      age: talker.age,
+      id: talker.id,
+      talk: { watchedAt: talker.talk_watched_at, rate: talker.talk_rate },
+    }));
+
+    return res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ message: `Error: ${error.message}` });
+  }
+});
 
 talkerRoute.get('/search', 
 validateToken,
