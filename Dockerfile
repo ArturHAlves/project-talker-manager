@@ -10,4 +10,4 @@ COPY .eslint* seed.sql jest.config.js ./
 
 USER node
 
-CMD [ "/bin/bash" ]
+CMD [ "npm", "start" ]
