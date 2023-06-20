@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./ 
 RUN npm install
 
-COPY __tests__ ./__tests__
+# COPY __tests__ ./__tests__
 COPY .eslint* seed.sql jest.config.js ./
 
 USER node
